@@ -1,0 +1,419 @@
+{
+  "id": "C",
+  "title": "Latency rises with peak traffic, CPU and connections",
+  "category": "edge",
+  "description": "An evening traffic peak triples request rate. Latency, database CPU and connection usage climb together; at the very end the pool also starts queueing. Query plans are fine.",
+  "slo": {
+    "p95_latency_ms": 200,
+    "pool_wait_ms": 50
+  },
+  "snapshots": [
+    {
+      "t": "18:00",
+      "qps": 400,
+      "p50_ms": 35,
+      "p95_ms": 120,
+      "p99_ms": 210,
+      "cpu_pct": 41,
+      "mem_pct": 60,
+      "io_wait_pct": 4,
+      "cache_hit_ratio": 0.98,
+      "pool": {
+        "size": 50,
+        "active": 18,
+        "idle": 32,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 62,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "18:01",
+      "qps": 520,
+      "p50_ms": 42,
+      "p95_ms": 150,
+      "p99_ms": 260,
+      "cpu_pct": 52,
+      "mem_pct": 62,
+      "io_wait_pct": 5,
+      "cache_hit_ratio": 0.98,
+      "pool": {
+        "size": 50,
+        "active": 24,
+        "idle": 26,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 80,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "18:02",
+      "qps": 680,
+      "p50_ms": 58,
+      "p95_ms": 210,
+      "p99_ms": 380,
+      "cpu_pct": 64,
+      "mem_pct": 65,
+      "io_wait_pct": 7,
+      "cache_hit_ratio": 0.97,
+      "pool": {
+        "size": 50,
+        "active": 31,
+        "idle": 19,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 104,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 2
+    },
+    {
+      "t": "18:03",
+      "qps": 850,
+      "p50_ms": 85,
+      "p95_ms": 320,
+      "p99_ms": 560,
+      "cpu_pct": 74,
+      "mem_pct": 68,
+      "io_wait_pct": 9,
+      "cache_hit_ratio": 0.96,
+      "pool": {
+        "size": 50,
+        "active": 38,
+        "idle": 12,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 128,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "18:04",
+      "qps": 990,
+      "p50_ms": 120,
+      "p95_ms": 450,
+      "p99_ms": 780,
+      "cpu_pct": 83,
+      "mem_pct": 71,
+      "io_wait_pct": 12,
+      "cache_hit_ratio": 0.95,
+      "pool": {
+        "size": 50,
+        "active": 44,
+        "idle": 6,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 150,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 2
+    },
+    {
+      "t": "18:05",
+      "qps": 1110,
+      "p50_ms": 170,
+      "p95_ms": 580,
+      "p99_ms": 980,
+      "cpu_pct": 89,
+      "mem_pct": 73,
+      "io_wait_pct": 14,
+      "cache_hit_ratio": 0.94,
+      "pool": {
+        "size": 50,
+        "active": 48,
+        "idle": 2,
+        "waiting": 2,
+        "avg_wait_ms": 25,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 168,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 2
+    },
+    {
+      "t": "18:06",
+      "qps": 1200,
+      "p50_ms": 230,
+      "p95_ms": 690,
+      "p99_ms": 1150,
+      "cpu_pct": 92,
+      "mem_pct": 75,
+      "io_wait_pct": 16,
+      "cache_hit_ratio": 0.93,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 14,
+        "avg_wait_ms": 180,
+        "timeouts": 1
+      },
+      "db_connections": {
+        "active": 182,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 2
+    },
+    {
+      "t": "18:07",
+      "qps": 1250,
+      "p50_ms": 280,
+      "p95_ms": 780,
+      "p99_ms": 1300,
+      "cpu_pct": 93,
+      "mem_pct": 76,
+      "io_wait_pct": 17,
+      "cache_hit_ratio": 0.93,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 35,
+        "avg_wait_ms": 420,
+        "timeouts": 4
+      },
+      "db_connections": {
+        "active": 189,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 2
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "Q7",
+      "sql": "SELECT id, title, price FROM listings WHERE category_id = $1 AND active = true ORDER BY score DESC LIMIT 50",
+      "calls_per_min": 5200,
+      "mean_ms": 38,
+      "plan": {
+        "node": "Index Scan",
+        "table": "listings",
+        "filter_columns": [
+          "category_id",
+          "active"
+        ],
+        "rows_examined": 120,
+        "rows_returned": 50,
+        "est_rows": 60,
+        "cost": 310.2,
+        "index_used": "listings_category_active_score_idx"
+      }
+    },
+    {
+      "query_id": "Q8",
+      "sql": "SELECT id, items, updated_at FROM carts WHERE user_id = $1",
+      "calls_per_min": 4100,
+      "mean_ms": 4.5,
+      "plan": {
+        "node": "Index Scan",
+        "table": "carts",
+        "filter_columns": [
+          "user_id"
+        ],
+        "rows_examined": 1,
+        "rows_returned": 1,
+        "est_rows": 1,
+        "cost": 8.5,
+        "index_used": "carts_user_id_idx"
+      }
+    },
+    {
+      "query_id": "Q9",
+      "sql": "SELECT count(*) FROM listing_views WHERE listing_id = $1 AND viewed_at > now() - interval '1 day'",
+      "calls_per_min": 2600,
+      "mean_ms": 22,
+      "plan": {
+        "node": "Index Only Scan",
+        "table": "listing_views",
+        "filter_columns": [
+          "listing_id",
+          "viewed_at"
+        ],
+        "rows_examined": 900,
+        "rows_returned": 1,
+        "est_rows": 1,
+        "cost": 95.0,
+        "index_used": "listing_views_listing_viewed_idx"
+      }
+    }
+  ],
+  "indexes": [
+    {
+      "table": "listings",
+      "name": "listings_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 40,
+      "scans": 3000000
+    },
+    {
+      "table": "listings",
+      "name": "listings_category_active_score_idx",
+      "columns": [
+        "category_id",
+        "active",
+        "score"
+      ],
+      "unique": false,
+      "size_mb": 55,
+      "scans": 9800000
+    },
+    {
+      "table": "carts",
+      "name": "carts_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 14,
+      "scans": 200000
+    },
+    {
+      "table": "carts",
+      "name": "carts_user_id_idx",
+      "columns": [
+        "user_id"
+      ],
+      "unique": false,
+      "size_mb": 13,
+      "scans": 6400000
+    },
+    {
+      "table": "listing_views",
+      "name": "listing_views_listing_viewed_idx",
+      "columns": [
+        "listing_id",
+        "viewed_at"
+      ],
+      "unique": false,
+      "size_mb": 2900,
+      "scans": 4100000
+    }
+  ],
+  "tables": [
+    {
+      "name": "listings",
+      "rows": 1800000,
+      "last_analyzed": "2026-11-10"
+    },
+    {
+      "name": "carts",
+      "rows": 600000,
+      "last_analyzed": "2026-11-10"
+    },
+    {
+      "name": "listing_views",
+      "rows": 95000000,
+      "last_analyzed": "2026-11-09"
+    }
+  ],
+  "logs": [
+    {
+      "ts": "18:02:15",
+      "level": "INFO",
+      "source": "app",
+      "message": "autoscaler: scaled web tier from 6 to 9 instances (request rate 680 rps)"
+    },
+    {
+      "ts": "18:03:30",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "checkpoints are occurring too frequently (24 seconds apart); HINT: consider increasing max_wal_size"
+    },
+    {
+      "ts": "18:04:10",
+      "level": "INFO",
+      "source": "app",
+      "message": "autoscaler: scaled web tier from 9 to 12 instances (request rate 990 rps)"
+    },
+    {
+      "ts": "18:05:05",
+      "level": "WARNING",
+      "source": "monitor",
+      "message": "db-primary CPU usage 89% for 2m"
+    },
+    {
+      "ts": "18:05:40",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "checkpoints are occurring too frequently (19 seconds apart); HINT: consider increasing max_wal_size"
+    },
+    {
+      "ts": "18:06:20",
+      "level": "WARNING",
+      "source": "app",
+      "message": "HikariPool-1 - 14 requests waiting for a connection (avg wait 180 ms)"
+    },
+    {
+      "ts": "18:06:45",
+      "level": "WARNING",
+      "source": "monitor",
+      "message": "db-primary CPU usage 92% for 4m; load average 15.8 on 16 vCPU"
+    },
+    {
+      "ts": "18:07:10",
+      "level": "WARNING",
+      "source": "app",
+      "message": "GET /api/listings p95 latency 780 ms exceeds SLO 200 ms"
+    },
+    {
+      "ts": "18:07:25",
+      "level": "WARNING",
+      "source": "monitor",
+      "message": "db-primary connections 189/200 (94.5%)"
+    },
+    {
+      "ts": "18:07:40",
+      "level": "WARNING",
+      "source": "monitor",
+      "message": "db-primary CPU usage 93% for 5m; load average 16.4 on 16 vCPU"
+    },
+    {
+      "ts": "18:07:52",
+      "level": "WARNING",
+      "source": "app",
+      "message": "HikariPool-1 - 35 requests waiting for a connection (avg wait 420 ms)"
+    }
+  ],
+  "ground_truth": {
+    "bottleneck": "RESOURCE_SATURATION_PEAK_LOAD",
+    "acceptable_actions": [
+      "profile_peak_load",
+      "rate_limit_peak_traffic",
+      "scale_read_replicas_or_cache"
+    ],
+    "notes": "Load-driven: latency tracks QPS and CPU from the start; pool queueing appears only in the last windows as a consequence, so treating it as a pool problem would be wrong."
+  }
+}

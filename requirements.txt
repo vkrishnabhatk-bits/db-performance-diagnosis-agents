@@ -1,0 +1,14 @@
+# Core
+pydantic>=2.7,<3
+pandas>=2.2
+
+# UI
+streamlit>=1.40
+
+# LLM agent (local Ollama through LangChain)
+langchain>=1.0
+langchain-core>=1.0
+langchain-ollama>=1.0
+
+# Tests
+pytest>=8.0

@@ -1,0 +1,350 @@
+{
+  "id": "B",
+  "title": "Requests wait for connections: pool saturated",
+  "category": "critical",
+  "description": "Requests are timing out. Every pool connection is in use and over a hundred requests queue for one, yet queries are fast and the database server is mostly idle.",
+  "slo": {
+    "p95_latency_ms": 200,
+    "pool_wait_ms": 50
+  },
+  "snapshots": [
+    {
+      "t": "14:00",
+      "qps": 395,
+      "p50_ms": 1450,
+      "p95_ms": 2900,
+      "p99_ms": 9800,
+      "cpu_pct": 24,
+      "mem_pct": 48,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 85,
+        "avg_wait_ms": 1900,
+        "timeouts": 3
+      },
+      "db_connections": {
+        "active": 55,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 17
+    },
+    {
+      "t": "14:01",
+      "qps": 402,
+      "p50_ms": 1720,
+      "p95_ms": 3400,
+      "p99_ms": 12500,
+      "cpu_pct": 23,
+      "mem_pct": 48,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 104,
+        "avg_wait_ms": 2300,
+        "timeouts": 6
+      },
+      "db_connections": {
+        "active": 55,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 19
+    },
+    {
+      "t": "14:02",
+      "qps": 398,
+      "p50_ms": 1980,
+      "p95_ms": 3900,
+      "p99_ms": 18000,
+      "cpu_pct": 22,
+      "mem_pct": 49,
+      "io_wait_pct": 2,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 121,
+        "avg_wait_ms": 2800,
+        "timeouts": 11
+      },
+      "db_connections": {
+        "active": 56,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 21
+    },
+    {
+      "t": "14:03",
+      "qps": 405,
+      "p50_ms": 2210,
+      "p95_ms": 4300,
+      "p99_ms": 30000,
+      "cpu_pct": 24,
+      "mem_pct": 48,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 138,
+        "avg_wait_ms": 3200,
+        "timeouts": 17
+      },
+      "db_connections": {
+        "active": 55,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 22
+    },
+    {
+      "t": "14:04",
+      "qps": 400,
+      "p50_ms": 2450,
+      "p95_ms": 4700,
+      "p99_ms": 30000,
+      "cpu_pct": 23,
+      "mem_pct": 48,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 152,
+        "avg_wait_ms": 3600,
+        "timeouts": 22
+      },
+      "db_connections": {
+        "active": 56,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 24
+    },
+    {
+      "t": "14:05",
+      "qps": 397,
+      "p50_ms": 2600,
+      "p95_ms": 5100,
+      "p99_ms": 30000,
+      "cpu_pct": 22,
+      "mem_pct": 49,
+      "io_wait_pct": 2,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 50,
+        "idle": 0,
+        "waiting": 167,
+        "avg_wait_ms": 3900,
+        "timeouts": 29
+      },
+      "db_connections": {
+        "active": 56,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 25
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "Q4",
+      "sql": "SELECT id, balance FROM accounts WHERE id = $1",
+      "calls_per_min": 4800,
+      "mean_ms": 1.2,
+      "plan": {
+        "node": "Index Scan",
+        "table": "accounts",
+        "filter_columns": [
+          "id"
+        ],
+        "rows_examined": 1,
+        "rows_returned": 1,
+        "est_rows": 1,
+        "cost": 8.4,
+        "index_used": "accounts_pkey"
+      }
+    },
+    {
+      "query_id": "Q5",
+      "sql": "SELECT user_id, expires_at FROM sessions WHERE session_id = $1",
+      "calls_per_min": 3900,
+      "mean_ms": 2.1,
+      "plan": {
+        "node": "Index Scan",
+        "table": "sessions",
+        "filter_columns": [
+          "session_id"
+        ],
+        "rows_examined": 1,
+        "rows_returned": 1,
+        "est_rows": 1,
+        "cost": 8.6,
+        "index_used": "sessions_pkey"
+      }
+    },
+    {
+      "query_id": "Q6",
+      "sql": "SELECT id, title, created_at FROM notifications WHERE user_id = $1 AND read = false",
+      "calls_per_min": 1200,
+      "mean_ms": 3.4,
+      "plan": {
+        "node": "Index Scan",
+        "table": "notifications",
+        "filter_columns": [
+          "user_id",
+          "read"
+        ],
+        "rows_examined": 14,
+        "rows_returned": 12,
+        "est_rows": 10,
+        "cost": 21.7,
+        "index_used": "notifications_user_id_read_idx"
+      }
+    }
+  ],
+  "indexes": [
+    {
+      "table": "accounts",
+      "name": "accounts_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 19,
+      "scans": 8100000
+    },
+    {
+      "table": "sessions",
+      "name": "sessions_pkey",
+      "columns": [
+        "session_id"
+      ],
+      "unique": true,
+      "size_mb": 140,
+      "scans": 6900000
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 300,
+      "scans": 40000
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_user_id_read_idx",
+      "columns": [
+        "user_id",
+        "read"
+      ],
+      "unique": false,
+      "size_mb": 410,
+      "scans": 2100000
+    }
+  ],
+  "tables": [
+    {
+      "name": "accounts",
+      "rows": 850000,
+      "last_analyzed": "2026-11-09"
+    },
+    {
+      "name": "sessions",
+      "rows": 3200000,
+      "last_analyzed": "2026-11-10"
+    },
+    {
+      "name": "notifications",
+      "rows": 14000000,
+      "last_analyzed": "2026-11-09"
+    }
+  ],
+  "logs": [
+    {
+      "ts": "14:00:05",
+      "level": "WARNING",
+      "source": "app",
+      "message": "SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms (total=50, active=50, idle=0, waiting=85)"
+    },
+    {
+      "ts": "14:00:40",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "checkpoint complete: wrote 312 buffers (0.2%); write=31.2 s"
+    },
+    {
+      "ts": "14:01:12",
+      "level": "WARNING",
+      "source": "app",
+      "message": "Connection leak detection triggered for org.postgresql.jdbc.PgConnection@3f2a9c on thread billing-export-4, stack trace follows: at com.shop.billing.InvoiceExporter.export(InvoiceExporter.java:88)"
+    },
+    {
+      "ts": "14:02:30",
+      "level": "ERROR",
+      "source": "app",
+      "message": "Request failed: SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms (total=50, active=50, idle=0, waiting=121)"
+    },
+    {
+      "ts": "14:03:10",
+      "level": "WARNING",
+      "source": "pg_monitor",
+      "message": "22 sessions idle in transaction for more than 60 s (application_name=billing-export)"
+    },
+    {
+      "ts": "14:03:44",
+      "level": "WARNING",
+      "source": "app",
+      "message": "Connection leak detection triggered for org.postgresql.jdbc.PgConnection@7bd014 on thread billing-export-2, stack trace follows: at com.shop.billing.InvoiceExporter.export(InvoiceExporter.java:88)"
+    },
+    {
+      "ts": "14:04:20",
+      "level": "ERROR",
+      "source": "app",
+      "message": "HikariPool-1 - pool exhausted: 152 threads waiting for a connection"
+    },
+    {
+      "ts": "14:05:02",
+      "level": "ERROR",
+      "source": "app",
+      "message": "Request failed: SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms (total=50, active=50, idle=0, waiting=167)"
+    },
+    {
+      "ts": "14:05:30",
+      "level": "WARNING",
+      "source": "app",
+      "message": "Connection leak detection triggered for org.postgresql.jdbc.PgConnection@a01c55 on thread billing-export-1, stack trace follows: at com.shop.billing.InvoiceExporter.export(InvoiceExporter.java:88)"
+    },
+    {
+      "ts": "14:05:48",
+      "level": "WARNING",
+      "source": "pg_monitor",
+      "message": "25 sessions idle in transaction for more than 60 s (application_name=billing-export)"
+    }
+  ],
+  "ground_truth": {
+    "bottleneck": "CONNECTION_POOL_SATURATION",
+    "acceptable_actions": [
+      "inspect_pool_usage",
+      "fix_connection_leak",
+      "tune_pool_and_timeouts"
+    ],
+    "notes": "Billing export leaks connections (idle in transaction); DB itself is under-used."
+  }
+}

@@ -1,0 +1,345 @@
+{
+  "id": "A",
+  "title": "Frequent query slow: full table scan",
+  "category": "normal",
+  "description": "The customer order-history endpoint is slow. Traffic is steady, the pool has headroom, but the most frequent query reads the whole orders table to return a few rows.",
+  "slo": {
+    "p95_latency_ms": 200,
+    "pool_wait_ms": 50
+  },
+  "snapshots": [
+    {
+      "t": "10:00",
+      "qps": 410,
+      "p50_ms": 310,
+      "p95_ms": 880,
+      "p99_ms": 1250,
+      "cpu_pct": 58,
+      "mem_pct": 62,
+      "io_wait_pct": 19,
+      "cache_hit_ratio": 0.83,
+      "pool": {
+        "size": 50,
+        "active": 31,
+        "idle": 19,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 36,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "10:01",
+      "qps": 425,
+      "p50_ms": 325,
+      "p95_ms": 910,
+      "p99_ms": 1310,
+      "cpu_pct": 61,
+      "mem_pct": 62,
+      "io_wait_pct": 21,
+      "cache_hit_ratio": 0.82,
+      "pool": {
+        "size": 50,
+        "active": 33,
+        "idle": 17,
+        "waiting": 0,
+        "avg_wait_ms": 2,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 38,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "10:02",
+      "qps": 418,
+      "p50_ms": 318,
+      "p95_ms": 895,
+      "p99_ms": 1280,
+      "cpu_pct": 60,
+      "mem_pct": 63,
+      "io_wait_pct": 20,
+      "cache_hit_ratio": 0.83,
+      "pool": {
+        "size": 50,
+        "active": 32,
+        "idle": 18,
+        "waiting": 0,
+        "avg_wait_ms": 1,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 37,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 0
+    },
+    {
+      "t": "10:03",
+      "qps": 430,
+      "p50_ms": 335,
+      "p95_ms": 940,
+      "p99_ms": 1360,
+      "cpu_pct": 63,
+      "mem_pct": 63,
+      "io_wait_pct": 22,
+      "cache_hit_ratio": 0.81,
+      "pool": {
+        "size": 50,
+        "active": 35,
+        "idle": 15,
+        "waiting": 0,
+        "avg_wait_ms": 3,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 40,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "10:04",
+      "qps": 422,
+      "p50_ms": 322,
+      "p95_ms": 905,
+      "p99_ms": 1300,
+      "cpu_pct": 61,
+      "mem_pct": 63,
+      "io_wait_pct": 21,
+      "cache_hit_ratio": 0.82,
+      "pool": {
+        "size": 50,
+        "active": 33,
+        "idle": 17,
+        "waiting": 0,
+        "avg_wait_ms": 2,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 38,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "10:05",
+      "qps": 415,
+      "p50_ms": 316,
+      "p95_ms": 890,
+      "p99_ms": 1270,
+      "cpu_pct": 59,
+      "mem_pct": 62,
+      "io_wait_pct": 20,
+      "cache_hit_ratio": 0.83,
+      "pool": {
+        "size": 50,
+        "active": 32,
+        "idle": 18,
+        "waiting": 0,
+        "avg_wait_ms": 1,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 37,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 0
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "Q1",
+      "sql": "SELECT id, status, total_amount FROM orders WHERE customer_email = $1 ORDER BY created_at DESC LIMIT 20",
+      "calls_per_min": 3000,
+      "mean_ms": 850,
+      "plan": {
+        "node": "Seq Scan",
+        "table": "orders",
+        "filter_columns": [
+          "customer_email"
+        ],
+        "rows_examined": 2400000,
+        "rows_returned": 3,
+        "est_rows": 4,
+        "cost": 48210.5,
+        "index_used": null
+      }
+    },
+    {
+      "query_id": "Q2",
+      "sql": "SELECT id, product_id, quantity FROM order_items WHERE order_id = $1",
+      "calls_per_min": 2600,
+      "mean_ms": 1.8,
+      "plan": {
+        "node": "Index Scan",
+        "table": "order_items",
+        "filter_columns": [
+          "order_id"
+        ],
+        "rows_examined": 4,
+        "rows_returned": 4,
+        "est_rows": 5,
+        "cost": 8.4,
+        "index_used": "order_items_order_id_idx"
+      }
+    },
+    {
+      "query_id": "Q3",
+      "sql": "SELECT id, name, price FROM products WHERE id = ANY($1)",
+      "calls_per_min": 900,
+      "mean_ms": 0.9,
+      "plan": {
+        "node": "Index Scan",
+        "table": "products",
+        "filter_columns": [
+          "id"
+        ],
+        "rows_examined": 6,
+        "rows_returned": 6,
+        "est_rows": 6,
+        "cost": 12.1,
+        "index_used": "products_pkey"
+      }
+    }
+  ],
+  "indexes": [
+    {
+      "table": "orders",
+      "name": "orders_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 52,
+      "scans": 1200000
+    },
+    {
+      "table": "orders",
+      "name": "orders_created_at_idx",
+      "columns": [
+        "created_at"
+      ],
+      "unique": false,
+      "size_mb": 48,
+      "scans": 3400
+    },
+    {
+      "table": "order_items",
+      "name": "order_items_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 170,
+      "scans": 90000
+    },
+    {
+      "table": "order_items",
+      "name": "order_items_order_id_idx",
+      "columns": [
+        "order_id"
+      ],
+      "unique": false,
+      "size_mb": 61,
+      "scans": 2600000
+    },
+    {
+      "table": "products",
+      "name": "products_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 1,
+      "scans": 540000
+    }
+  ],
+  "tables": [
+    {
+      "name": "orders",
+      "rows": 2400000,
+      "last_analyzed": "2026-11-08"
+    },
+    {
+      "name": "order_items",
+      "rows": 7900000,
+      "last_analyzed": "2026-11-08"
+    },
+    {
+      "name": "products",
+      "rows": 12000,
+      "last_analyzed": "2026-11-07"
+    }
+  ],
+  "logs": [
+    {
+      "ts": "10:00:14",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "duration: 912.4 ms  statement: SELECT id, status, total_amount FROM orders WHERE customer_email = 'a***@example.com' ORDER BY created_at DESC LIMIT 20"
+    },
+    {
+      "ts": "10:01:30",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "duration: 874.0 ms  statement: SELECT id, status, total_amount FROM orders WHERE customer_email = 'k***@example.com' ..."
+    },
+    {
+      "ts": "10:02:40",
+      "level": "WARNING",
+      "source": "app",
+      "message": "GET /api/customers/orders p95 latency 895 ms exceeds SLO 200 ms"
+    },
+    {
+      "ts": "10:03:05",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "automatic vacuum of table \"shop.public.orders\": index scans: 1, pages: 0 removed"
+    },
+    {
+      "ts": "10:03:48",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "duration: 1012.7 ms  statement: SELECT id, status, total_amount FROM orders WHERE customer_email = 'm***@example.com' ..."
+    },
+    {
+      "ts": "10:04:30",
+      "level": "INFO",
+      "source": "app",
+      "message": "HikariPool-1 stats: total=50, active=33, idle=17, waiting=0"
+    },
+    {
+      "ts": "10:05:12",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "duration: 948.3 ms  statement: SELECT id, status, total_amount FROM orders WHERE customer_email = 'r***@example.com' ..."
+    },
+    {
+      "ts": "10:05:40",
+      "level": "WARNING",
+      "source": "app",
+      "message": "GET /api/customers/orders p95 latency 890 ms exceeds SLO 200 ms"
+    }
+  ],
+  "ground_truth": {
+    "bottleneck": "MISSING_INDEX_FULL_SCAN",
+    "acceptable_actions": [
+      "explain_analyze_in_staging",
+      "review_index_proposal"
+    ],
+    "notes": "Q1 filters on orders.customer_email, which no index covers; 2.4M rows scanned per call."
+  }
+}

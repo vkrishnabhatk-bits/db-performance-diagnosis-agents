@@ -1,0 +1,13 @@
+[project]
+name = "dbdiag"
+version = "0.1.0"
+description = "Database Performance Diagnosis Assistant: five classical agents and a local LLM agent"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-m 'not ollama'"
+markers = [
+    "ollama: needs a running local Ollama server with the configured model (run with: pytest -m ollama)",
+]

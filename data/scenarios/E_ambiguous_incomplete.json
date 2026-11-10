@@ -1,0 +1,367 @@
+{
+  "id": "E",
+  "title": "Intermittent spikes with missing telemetry",
+  "category": "edge",
+  "description": "p99 latency spikes now and then and p95 hovers around the SLO. CPU and memory metrics stopped arriving after two minutes. A payments query has planner estimates far off from actual rows, and a few requests hit lock timeouts. No single cause is clear.",
+  "slo": {
+    "p95_latency_ms": 200,
+    "pool_wait_ms": 50
+  },
+  "snapshots": [
+    {
+      "t": "09:00",
+      "qps": 300,
+      "p50_ms": 40,
+      "p95_ms": 150,
+      "p99_ms": 400,
+      "cpu_pct": 34,
+      "mem_pct": 51,
+      "io_wait_pct": 6,
+      "cache_hit_ratio": 0.96,
+      "pool": {
+        "size": 50,
+        "active": 22,
+        "idle": 28,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 30,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 2
+    },
+    {
+      "t": "09:01",
+      "qps": 310,
+      "p50_ms": 42,
+      "p95_ms": 190,
+      "p99_ms": 1650,
+      "cpu_pct": 36,
+      "mem_pct": 52,
+      "io_wait_pct": 8,
+      "cache_hit_ratio": 0.95,
+      "pool": {
+        "size": 50,
+        "active": 27,
+        "idle": 23,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 35,
+        "max": 200
+      },
+      "lock_waits": 3,
+      "idle_in_transaction": 4
+    },
+    {
+      "t": "09:02",
+      "qps": 305,
+      "p50_ms": 41,
+      "p95_ms": 165,
+      "p99_ms": 520,
+      "cpu_pct": null,
+      "mem_pct": null,
+      "io_wait_pct": 7,
+      "cache_hit_ratio": 0.96,
+      "pool": {
+        "size": 50,
+        "active": 24,
+        "idle": 26,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 32,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 3
+    },
+    {
+      "t": "09:03",
+      "qps": 298,
+      "p50_ms": 40,
+      "p95_ms": 230,
+      "p99_ms": 2100,
+      "cpu_pct": null,
+      "mem_pct": null,
+      "io_wait_pct": 9,
+      "cache_hit_ratio": 0.95,
+      "pool": {
+        "size": 50,
+        "active": 31,
+        "idle": 19,
+        "waiting": 2,
+        "avg_wait_ms": 35,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 39,
+        "max": 200
+      },
+      "lock_waits": 4,
+      "idle_in_transaction": 5
+    },
+    {
+      "t": "09:04",
+      "qps": 312,
+      "p50_ms": 43,
+      "p95_ms": 175,
+      "p99_ms": 480,
+      "cpu_pct": null,
+      "mem_pct": null,
+      "io_wait_pct": 7,
+      "cache_hit_ratio": 0.96,
+      "pool": {
+        "size": 50,
+        "active": 25,
+        "idle": 25,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 33,
+        "max": 200
+      },
+      "lock_waits": 1,
+      "idle_in_transaction": 3
+    },
+    {
+      "t": "09:05",
+      "qps": 306,
+      "p50_ms": 41,
+      "p95_ms": 210,
+      "p99_ms": 1900,
+      "cpu_pct": null,
+      "mem_pct": null,
+      "io_wait_pct": 8,
+      "cache_hit_ratio": 0.95,
+      "pool": {
+        "size": 50,
+        "active": 29,
+        "idle": 21,
+        "waiting": 1,
+        "avg_wait_ms": 20,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 37,
+        "max": 200
+      },
+      "lock_waits": 3,
+      "idle_in_transaction": 4
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "Q10",
+      "sql": "SELECT id, amount, status FROM payments WHERE merchant_id = $1 AND created_at >= $2",
+      "calls_per_min": 1800,
+      "mean_ms": 95,
+      "plan": {
+        "node": "Index Scan",
+        "table": "payments",
+        "filter_columns": [
+          "merchant_id",
+          "created_at"
+        ],
+        "rows_examined": 18700,
+        "rows_returned": 18500,
+        "est_rows": 12,
+        "cost": 41.3,
+        "index_used": "payments_merchant_created_idx"
+      }
+    },
+    {
+      "query_id": "Q11",
+      "sql": "SELECT id FROM payment_batches WHERE status = 'OPEN' ORDER BY id LIMIT 1 FOR UPDATE",
+      "calls_per_min": 60,
+      "mean_ms": 450,
+      "plan": {
+        "node": "Index Scan",
+        "table": "payment_batches",
+        "filter_columns": [
+          "status"
+        ],
+        "rows_examined": 3,
+        "rows_returned": 1,
+        "est_rows": 2,
+        "cost": 8.3,
+        "index_used": "payment_batches_status_idx"
+      }
+    },
+    {
+      "query_id": "Q14",
+      "sql": "SELECT id, name FROM merchants WHERE id = $1",
+      "calls_per_min": 1800,
+      "mean_ms": 0.7,
+      "plan": {
+        "node": "Index Scan",
+        "table": "merchants",
+        "filter_columns": [
+          "id"
+        ],
+        "rows_examined": 1,
+        "rows_returned": 1,
+        "est_rows": 1,
+        "cost": 8.3,
+        "index_used": "merchants_pkey"
+      }
+    }
+  ],
+  "indexes": [
+    {
+      "table": "payments",
+      "name": "payments_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 880,
+      "scans": 2000000
+    },
+    {
+      "table": "payments",
+      "name": "payments_merchant_created_idx",
+      "columns": [
+        "merchant_id",
+        "created_at"
+      ],
+      "unique": false,
+      "size_mb": 1250,
+      "scans": 7300000
+    },
+    {
+      "table": "payment_batches",
+      "name": "payment_batches_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 1.2,
+      "scans": 90000
+    },
+    {
+      "table": "payment_batches",
+      "name": "payment_batches_status_idx",
+      "columns": [
+        "status"
+      ],
+      "unique": false,
+      "size_mb": 0.6,
+      "scans": 210000
+    },
+    {
+      "table": "merchants",
+      "name": "merchants_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 0.4,
+      "scans": 3100000
+    }
+  ],
+  "tables": [
+    {
+      "name": "payments",
+      "rows": 41000000,
+      "last_analyzed": "2026-08-14"
+    },
+    {
+      "name": "payment_batches",
+      "rows": 52000,
+      "last_analyzed": "2026-11-09"
+    },
+    {
+      "name": "merchants",
+      "rows": 9000,
+      "last_analyzed": "2026-11-09"
+    }
+  ],
+  "logs": [
+    {
+      "ts": "09:00:50",
+      "level": "INFO",
+      "source": "app",
+      "message": "settlement worker started (4 threads)"
+    },
+    {
+      "ts": "09:01:22",
+      "level": "ERROR",
+      "source": "postgres",
+      "message": "canceling statement due to lock timeout; STATEMENT: SELECT id FROM payment_batches WHERE status = 'OPEN' ORDER BY id LIMIT 1 FOR UPDATE"
+    },
+    {
+      "ts": "09:01:23",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "process 5521 still waiting for ShareLock on transaction 99812 after 1000.122 ms"
+    },
+    {
+      "ts": "09:02:00",
+      "level": "WARNING",
+      "source": "monitor",
+      "message": "node_exporter on db-primary not responding; CPU and memory metrics unavailable"
+    },
+    {
+      "ts": "09:03:15",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "process 5530 still waiting for ShareLock on transaction 99840 after 1000.517 ms"
+    },
+    {
+      "ts": "09:03:16",
+      "level": "ERROR",
+      "source": "app",
+      "message": "lock wait timeout exceeded while settling payment batch 7712"
+    },
+    {
+      "ts": "09:04:05",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "skipping analyze of \"payments\" --- lock not available"
+    },
+    {
+      "ts": "09:04:40",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "duration: 1830.2 ms  statement: SELECT id, amount, status FROM payments WHERE merchant_id = 4411 AND created_at >= '2026-11-01'"
+    },
+    {
+      "ts": "09:05:10",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "process 5544 still waiting for ShareLock on transaction 99871 after 1000.301 ms"
+    },
+    {
+      "ts": "09:05:30",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "duration: 1710.8 ms  statement: SELECT id, amount, status FROM payments WHERE merchant_id = 4411 AND created_at >= '2026-11-01'"
+    },
+    {
+      "ts": "09:05:50",
+      "level": "WARNING",
+      "source": "monitor",
+      "message": "node_exporter on db-primary not responding; CPU and memory metrics unavailable"
+    }
+  ],
+  "ground_truth": {
+    "bottleneck": "AMBIGUOUS",
+    "acceptable_actions": [
+      "check_locks",
+      "analyze_stats_in_staging",
+      "collect_missing_telemetry",
+      "explain_analyze_in_staging"
+    ],
+    "notes": "Two plausible causes (row-lock contention on payment_batches; stale statistics on payments, last analyzed 2026-08-14 and auto-analyze blocked by locks) and CPU data missing. The right move is low-risk diagnostics and lower confidence, not a single fix."
+  }
+}

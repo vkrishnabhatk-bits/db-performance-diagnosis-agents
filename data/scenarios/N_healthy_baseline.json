@@ -1,0 +1,275 @@
+{
+  "id": "N",
+  "title": "Healthy baseline",
+  "category": "normal",
+  "description": "A normal weekday morning. All metrics are inside the SLO. One query does a sequential scan, but over a 48-row settings table, which is cheap and expected.",
+  "slo": {
+    "p95_latency_ms": 200,
+    "pool_wait_ms": 50
+  },
+  "snapshots": [
+    {
+      "t": "11:00",
+      "qps": 350,
+      "p50_ms": 18,
+      "p95_ms": 85,
+      "p99_ms": 160,
+      "cpu_pct": 32,
+      "mem_pct": 55,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 12,
+        "idle": 38,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 20,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 0
+    },
+    {
+      "t": "11:01",
+      "qps": 356,
+      "p50_ms": 18,
+      "p95_ms": 88,
+      "p99_ms": 165,
+      "cpu_pct": 33,
+      "mem_pct": 55,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 13,
+        "idle": 37,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 21,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "11:02",
+      "qps": 348,
+      "p50_ms": 17,
+      "p95_ms": 84,
+      "p99_ms": 158,
+      "cpu_pct": 31,
+      "mem_pct": 55,
+      "io_wait_pct": 2,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 11,
+        "idle": 39,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 19,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 0
+    },
+    {
+      "t": "11:03",
+      "qps": 361,
+      "p50_ms": 19,
+      "p95_ms": 90,
+      "p99_ms": 170,
+      "cpu_pct": 34,
+      "mem_pct": 56,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 14,
+        "idle": 36,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 22,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 0
+    },
+    {
+      "t": "11:04",
+      "qps": 354,
+      "p50_ms": 18,
+      "p95_ms": 86,
+      "p99_ms": 162,
+      "cpu_pct": 33,
+      "mem_pct": 55,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 12,
+        "idle": 38,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 20,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 1
+    },
+    {
+      "t": "11:05",
+      "qps": 352,
+      "p50_ms": 18,
+      "p95_ms": 85,
+      "p99_ms": 160,
+      "cpu_pct": 32,
+      "mem_pct": 55,
+      "io_wait_pct": 3,
+      "cache_hit_ratio": 0.99,
+      "pool": {
+        "size": 50,
+        "active": 12,
+        "idle": 38,
+        "waiting": 0,
+        "avg_wait_ms": 0,
+        "timeouts": 0
+      },
+      "db_connections": {
+        "active": 20,
+        "max": 200
+      },
+      "lock_waits": 0,
+      "idle_in_transaction": 0
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "Q12",
+      "sql": "SELECT key, value FROM app_settings",
+      "calls_per_min": 600,
+      "mean_ms": 0.3,
+      "plan": {
+        "node": "Seq Scan",
+        "table": "app_settings",
+        "filter_columns": [],
+        "rows_examined": 48,
+        "rows_returned": 48,
+        "est_rows": 50,
+        "cost": 1.5,
+        "index_used": null
+      }
+    },
+    {
+      "query_id": "Q13",
+      "sql": "SELECT id, name, email FROM users WHERE id = $1",
+      "calls_per_min": 3000,
+      "mean_ms": 0.8,
+      "plan": {
+        "node": "Index Scan",
+        "table": "users",
+        "filter_columns": [
+          "id"
+        ],
+        "rows_examined": 1,
+        "rows_returned": 1,
+        "est_rows": 1,
+        "cost": 8.4,
+        "index_used": "users_pkey"
+      }
+    }
+  ],
+  "indexes": [
+    {
+      "table": "app_settings",
+      "name": "app_settings_pkey",
+      "columns": [
+        "key"
+      ],
+      "unique": true,
+      "size_mb": 0.1,
+      "scans": 1200
+    },
+    {
+      "table": "users",
+      "name": "users_pkey",
+      "columns": [
+        "id"
+      ],
+      "unique": true,
+      "size_mb": 26,
+      "scans": 9000000
+    },
+    {
+      "table": "users",
+      "name": "users_email_key",
+      "columns": [
+        "email"
+      ],
+      "unique": true,
+      "size_mb": 44,
+      "scans": 310000
+    }
+  ],
+  "tables": [
+    {
+      "name": "app_settings",
+      "rows": 48,
+      "last_analyzed": "2026-11-10"
+    },
+    {
+      "name": "users",
+      "rows": 1200000,
+      "last_analyzed": "2026-11-10"
+    }
+  ],
+  "logs": [
+    {
+      "ts": "11:00:30",
+      "level": "INFO",
+      "source": "app",
+      "message": "health check OK (db latency 2 ms)"
+    },
+    {
+      "ts": "11:02:10",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "checkpoint complete: wrote 204 buffers (0.1%); write=20.4 s"
+    },
+    {
+      "ts": "11:03:45",
+      "level": "LOG",
+      "source": "postgres",
+      "message": "automatic analyze of table \"shop.public.users\""
+    },
+    {
+      "ts": "11:05:30",
+      "level": "INFO",
+      "source": "app",
+      "message": "health check OK (db latency 2 ms)"
+    }
+  ],
+  "ground_truth": {
+    "bottleneck": "HEALTHY",
+    "acceptable_actions": [
+      "continue_monitoring"
+    ],
+    "notes": "The Seq Scan on app_settings is a false lead: 48 rows."
+  }
+}
