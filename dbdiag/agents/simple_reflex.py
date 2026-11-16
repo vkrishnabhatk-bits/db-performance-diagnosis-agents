@@ -1,76 +1,119 @@
+"""Simple reflex agent: condition -> action rules on the current percept only.
+
+It sees the **latest window** (plus the static query plans) and has no memory.
+The rules are checked in order and the first match wins. That is its known
+weakness: in a load-driven incident (scenario C) the last window shows the pool
+saturated, so rule 1 fires even though the cause is the traffic peak.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Callable
+
 from dbdiag.agents.base import BaseAgent
+from dbdiag.agents.common import DEFAULT_PLAYBOOK, evidence_lines, render_steps, symptom_summary, verification_metric
 from dbdiag.models import AgentDecision, Bottleneck, Scenario
-from dbdiag.perception import extract_percept
+from dbdiag.perception import Percept, perceive
+
+B = Bottleneck
+
+
+@dataclass(frozen=True)
+class Rule:
+    number: int
+    name: str
+    condition: Callable[[Percept], bool]
+    describe: Callable[[Percept], str]  # the values that made it fire
+    bottleneck: Bottleneck
+    confidence: float
+
+
+def _cpu(p: Percept) -> str:
+    return "missing" if p.cpu_pct is None else f"{p.cpu_pct:.0f}%"
+
+
+RULES: tuple[Rule, ...] = (
+    Rule(
+        1, "pool saturated",
+        lambda p: p.pool_waiting > 0 and p.pool_active >= p.pool_size,
+        lambda p: f"pool.active {p.pool_active} == size {p.pool_size} and pool.waiting {p.pool_waiting} > 0",
+        B.CONNECTION_POOL_SATURATION, 0.8,
+    ),
+    Rule(
+        2, "large full scan",
+        lambda p: p.has("full_scan_large_table"),
+        lambda p: next(
+            f"{pl.query_id} Seq Scan examines {pl.rows_examined:,} rows for {pl.rows_returned} "
+            f"(ratio {pl.selectivity_ratio:,.0f})"
+            for pl in p.plans if pl.is_large_table_scan
+        ),
+        B.MISSING_INDEX_FULL_SCAN, 0.8,
+    ),
+    Rule(
+        3, "CPU high",
+        lambda p: p.has("cpu_high"),
+        lambda p: f"cpu_pct {_cpu(p)} >= 85",
+        B.RESOURCE_SATURATION_PEAK_LOAD, 0.75,
+    ),
+    Rule(
+        4, "lock waits",
+        lambda p: p.has("lock_waits"),
+        lambda p: f"lock_waits {p.lock_waits}, lock-wait log entries {p.logs.count('lock_wait')}",
+        B.LOCK_CONTENTION, 0.7,
+    ),
+    Rule(
+        5, "everything inside the SLO",
+        lambda p: p.has("healthy"),
+        lambda p: f"p95 {p.p95_ms:.0f} <= {p.slo_p95_ms:.0f} ms, pool waiting 0, no problem symptoms",
+        B.HEALTHY, 0.9,
+    ),
+    Rule(
+        6, "fallback",
+        lambda p: True,
+        lambda p: "no earlier rule matched",
+        B.AMBIGUOUS, 0.4,
+    ),
+)
+
 
 class SimpleReflexAgent(BaseAgent):
+    name = "Simple Reflex"
+    mechanism = "Ordered condition-action rules on the latest window only; first match wins."
+
     def decide(self, scenario: Scenario) -> AgentDecision:
-        percept = extract_percept(scenario)
-        latest = percept.latest_snapshot
-        slowest_query = percept.slowest_query
-        
-        trace = [f"Evaluated latest snapshot at t={latest.t}"]
-        evidence = [
-            f"QPS: {latest.qps}, p95 latency: {latest.p95_ms}ms",
-            f"Pool active/size: {latest.pool.active}/{latest.pool.size}, waiting: {latest.pool.waiting}"
-        ]
-        
-        if slowest_query:
-            evidence.append(f"Slowest query {slowest_query.query_id}: {slowest_query.mean_ms}ms, plan: {slowest_query.plan.node}")
+        p = perceive(scenario)  # latest window only: no memory
+        trace = [f"Percept: latest window {p.t} only ({p.n_windows} windows exist; earlier ones are ignored)"]
+        if p.cpu_pct is None:
+            trace.append("cpu_pct is missing in this window, so rule 3 cannot match")
 
-        # Rule 1: Pool saturation
-        if latest.pool.waiting > 0 and latest.pool.active >= latest.pool.size:
-            bottleneck = Bottleneck.CONNECTION_POOL_SATURATION
-            summary = "Connection pool is fully saturated with requests waiting."
-            steps = ["inspect_pool_usage", "tune_pool_and_timeouts", "fix_connection_leak"]
-            metric = "Pool average wait time < 10ms and 0 waiting requests"
-            trace.append("Fired rule: pool.waiting > 0 and pool.active >= pool.size")
-            confidence = 0.9
-            
-        # Rule 2: Missing index / Full scan
-        elif slowest_query and slowest_query.plan.node == "Seq Scan" and ( slowest_query.plan.rows_examined / max(slowest_query.plan.rows_returned, 1) > 10000 ):
-            bottleneck = Bottleneck.MISSING_INDEX_FULL_SCAN
-            summary = f"Query {slowest_query.query_id} performing full table scan examining {slowest_query.plan.rows_examined} rows."
-            steps = ["explain_analyze_in_staging", "review_index_proposal"]
-            metric = f"Query {slowest_query.query_id} mean latency < 50ms"
-            trace.append("Fired rule: Seq Scan with high rows examined vs returned ratio")
-            confidence = 0.85
-            
-        # Rule 3: Resource saturation (CPU high)
-        elif latest.cpu_pct >= 85:
-            bottleneck = Bottleneck.RESOURCE_SATURATION_PEAK_LOAD
-            summary = f"CPU utilization is critically high at {latest.cpu_pct}%."
-            steps = ["scale_read_replicas_or_cache", "inspect_pool_usage"]
-            metric = "CPU utilization < 70% during peak load"
-            trace.append("Fired rule: cpu_pct >= 85")
-            confidence = 0.8
-            
-        # Rule 4: Healthy
-        elif latest.p95_ms <= scenario.slo.p95_latency_ms and latest.pool.avg_wait_ms <= scenario.slo.pool_wait_ms:
-            bottleneck = Bottleneck.HEALTHY
-            summary = "All performance metrics are well within acceptable SLO bounds."
-            steps = ["continue_monitoring"]
-            metric = "Maintain current p95 latency and pool wait times"
-            trace.append("Fired rule: All metrics within SLO")
-            confidence = 0.95
-            
-        # Rule 5: Ambiguous / Fallback
-        else:
-            bottleneck = Bottleneck.AMBIGUOUS
-            summary = "Metrics show minor anomalies but do not match strict single-cause rules."
-            steps = ["explain_analyze_in_staging", "inspect_pool_usage"]
-            metric = "Stability across subsequent windows"
-            trace.append("Fired fallback rule due to unclassified metrics")
-            confidence = 0.5
+        fired: Rule | None = None
+        for rule in RULES:
+            if rule.condition(p):
+                fired = rule
+                trace.append(f"Rule {rule.number} ({rule.name}) FIRED: {rule.describe(p)}")
+                break
+            trace.append(f"Rule {rule.number} ({rule.name}) did not match")
+        assert fired is not None  # the fallback always matches
 
-        return AgentDecision(
-            agent="Simple Reflex",
-            scenario_fingerprint=scenario.fingerprint() if hasattr(scenario, "fingerprint") else "",
-            symptom_summary=summary,
-            evidence=evidence,
-            bottleneck=bottleneck,
-            recommended_steps=steps,
-            verification_metric=metric,
-            confidence=confidence,
+        actions = list(DEFAULT_PLAYBOOK[fired.bottleneck])
+        return self.make_decision(
+            scenario,
+            symptom_summary=symptom_summary(p, fired.bottleneck, f"Latest window {p.t}"),
+            evidence=evidence_lines(p),
+            bottleneck=fired.bottleneck,
+            recommended_steps=render_steps(actions, p),
+            verification_metric=verification_metric(fired.bottleneck, p),
+            confidence=fired.confidence,
             reasoning_trace=trace,
-            extras={"rules_evaluated": len(trace)}
+            extras={
+                "action_ids": actions,
+                "rule_fired": fired.number,
+                "rule_name": fired.name,
+                "mechanism_detail": f"rule {fired.number} ({fired.name}) on window {p.t}",
+                "why": (
+                    f"rule {fired.number} ({fired.name}) matched the latest window {p.t}; "
+                    "it has no memory of earlier windows and stops at the first match"
+                ),
+            },
         )

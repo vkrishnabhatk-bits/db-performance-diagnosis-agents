@@ -1,0 +1,36 @@
+{
+  "_comment": "Initial learning-agent history: outcomes of earlier (simulated) incidents. Keys are symptom signatures; options are BOTTLENECK|action. data/experience.json is created from this file and is the live, gitignored copy.",
+  "counts": {
+    "full_scan+high_latency": {
+      "MISSING_INDEX_FULL_SCAN|review_index_proposal": {"success": 7, "failure": 1},
+      "MISSING_INDEX_FULL_SCAN|explain_analyze_in_staging": {"success": 2, "failure": 0}
+    },
+    "full_scan+high_latency+qps_up": {
+      "RESOURCE_SATURATION_PEAK_LOAD|scale_read_replicas_or_cache": {"success": 1, "failure": 2},
+      "MISSING_INDEX_FULL_SCAN|review_index_proposal": {"success": 2, "failure": 0}
+    },
+    "high_latency+low_cpu+pool_waiting": {
+      "CONNECTION_POOL_SATURATION|fix_connection_leak": {"success": 5, "failure": 1},
+      "CONNECTION_POOL_SATURATION|tune_pool_and_timeouts": {"success": 3, "failure": 2}
+    },
+    "conn_up+cpu_up+high_latency+qps_up": {
+      "RESOURCE_SATURATION_PEAK_LOAD|rate_limit_peak_traffic": {"success": 4, "failure": 1},
+      "RESOURCE_SATURATION_PEAK_LOAD|scale_read_replicas_or_cache": {"success": 1, "failure": 2}
+    },
+    "high_latency+pool_waiting+qps_up": {
+      "CONNECTION_POOL_SATURATION|tune_pool_and_timeouts": {"success": 1, "failure": 3}
+    },
+    "lock_waits+missing_metric+stale_stats": {
+      "AMBIGUOUS|check_locks": {"success": 3, "failure": 0},
+      "AMBIGUOUS|collect_missing_telemetry": {"success": 1, "failure": 1},
+      "LOCK_CONTENTION|shorten_long_transactions": {"success": 0, "failure": 2}
+    },
+    "high_latency+stale_stats": {
+      "STALE_STATISTICS|analyze_stats_in_staging": {"success": 2, "failure": 0}
+    },
+    "healthy+low_cpu": {
+      "HEALTHY|continue_monitoring": {"success": 6, "failure": 0}
+    }
+  },
+  "history": []
+}
