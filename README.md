@@ -206,13 +206,15 @@ and listed in the UI.
 
 ## Testing
 
-`pytest` runs 234 tests (`results/pytest_report.txt`): scenario schema and fingerprints, perception,
+`pytest` runs 242 tests (`results/pytest_report.txt`): scenario schema and fingerprints, perception,
 tools, safety, the classical agents (agents × scenarios; diagnostics before changes; mechanism
 checks such as the BFS plan, utility weights and model-based state), the learning agent (counts
 update and persist, history flips the ranking, ε = 0 determinism, reset), the LLM agent with a
 scripted fake chat model (tool loop, ≥ 2-tool and evidence-group re-prompts, schema repair,
-grounding, diagnostics-first reordering, unsafe removal, Ollama-down error), and runner fairness. `pytest -m ollama` runs the real model on A, B and C and
-asserts ≥ 2 distinct tools and grounding ≥ 0.7.
+grounding, diagnostics-first reordering, unsafe removal, Ollama-down error), runner fairness, and
+headless Streamlit smoke tests (`streamlit.testing.AppTest`: every scenario renders all four tabs,
+feedback updates and resets the experience, the scoreboard covers every scenario).
+`pytest -m ollama` runs the real model on A, B and C and asserts ≥ 2 distinct tools and grounding ≥ 0.7.
 
 ## Limitations
 
@@ -236,12 +238,30 @@ asserts ≥ 2 distinct tools and grounding ≥ 0.7.
 
 ## Screenshots
 
-`docs/screenshots/`: for A, B and C, the Agent decisions tab, the Comparison tab and the LLM tool
-trace; the Learning tab before and after feedback; and scenario E.
+Captured from the running app (`streamlit run app.py`) with real `qwen3:8b` runs, in
+`docs/screenshots/`. Each scenario has four: telemetry (`_0_scenario`), the six decision cards
+(`_1_agent_decisions`), the comparison table with "why the decisions differ" (`_2_comparison`), and
+the LLM's tool-call trace with ✅/⚠️ evidence checks (`_3_llm_tool_trace`).
+
+| Scenario | Scenario | Agent decisions | Comparison | LLM tool trace |
+| --- | --- | --- | --- | --- |
+| A (normal) | [A_0](docs/screenshots/A_0_scenario.png) | [A_1](docs/screenshots/A_1_agent_decisions.png) | [A_2](docs/screenshots/A_2_comparison.png) | [A_3](docs/screenshots/A_3_llm_tool_trace.png) |
+| B (critical) | [B_0](docs/screenshots/B_0_scenario.png) | [B_1](docs/screenshots/B_1_agent_decisions.png) | [B_2](docs/screenshots/B_2_comparison.png) | [B_3](docs/screenshots/B_3_llm_tool_trace.png) |
+| C (edge) | [C_0](docs/screenshots/C_0_scenario.png) | [C_1](docs/screenshots/C_1_agent_decisions.png) | [C_2](docs/screenshots/C_2_comparison.png) | [C_3](docs/screenshots/C_3_llm_tool_trace.png) |
+| E (ambiguous edge) | [E_0](docs/screenshots/E_0_scenario.png) | [E_1](docs/screenshots/E_1_agent_decisions.png) | [E_2](docs/screenshots/E_2_comparison.png) | [E_3](docs/screenshots/E_3_llm_tool_trace.png) |
+
+Learning tab on scenario A, starting from the seed experience:
+[before feedback](docs/screenshots/learning_1_before_feedback.png) and
+[after the simulated critic](docs/screenshots/learning_2_after_feedback.png)
+(`review_index_proposal` for `full_scan+high_latency`: 7 → 8 successes, rate 0.800 → 0.818,
+one history entry). `A_3` was taken after that feedback, which is why its Learning card shows 0.84
+rather than the 0.82 in `A_1`.
+
+![Comparison on scenario C](docs/screenshots/C_2_comparison.png)
 
 ## Team
 
-Group: _TBD_
+Group 15 (Assignment 1, Set 4)
 
 | Member | Contribution |
 |--------|--------------|

@@ -77,7 +77,12 @@ def rate(counts: dict) -> float:
 def line_chart(df: pd.DataFrame, field: str, title: str, unit: str, slo: float | None = None) -> alt.Chart:
     base = alt.Chart(df).encode(x=alt.X("t:O", title=None, axis=alt.Axis(labelAngle=0)))
     line = base.mark_line(color=SERIES, strokeWidth=2, point=alt.OverlayMarkDef(size=64, filled=True, color=SERIES)).encode(
-        y=alt.Y(f"{field}:Q", title=unit),
+        # "~" trims trailing zeros (an all-zero series otherwise gets a "0.000000" tick), and an
+        # all-zero series gets a 0..1 domain so its line sits on the baseline, not mid-chart.
+        y=alt.Y(
+            f"{field}:Q", title=unit, axis=alt.Axis(format=",~f"),
+            scale=alt.Scale(domain=(0, 1)) if not df[field].fillna(0).any() else alt.Undefined,
+        ),
         tooltip=[alt.Tooltip("t:O", title="window"), alt.Tooltip(f"{field}:Q", title=title, format=",.0f")],
     )
     layers = [line]
