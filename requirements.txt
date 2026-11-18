@@ -4,6 +4,7 @@ pandas>=2.2
 
 # UI
 streamlit>=1.40
+altair>=5.0
 
 # LLM agent (local Ollama through LangChain)
 langchain>=1.0
