@@ -266,4 +266,6 @@ Group 15 (Assignment 1, Set 4)
 | Member | Contribution |
 |--------|--------------|
 | Venkatakrishna Bhat K | Shared core (models, scenarios, tools, perception, safety), agents, UI |
-| Nagaraju | First version of the six agents |
+| MOPURI NAGARAJU | First version of the six agents |
+| D ASRITHA | Streamlit UI (front end) and UI smoke tests |
+| SUNEIIL SINGHH | Testing and report |
