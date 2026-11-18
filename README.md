@@ -5,6 +5,8 @@ telemetry (query latency, connection-pool status, query plans, index metadata, d
 recommend **safe** diagnostics or optimizations. Nothing is ever executed: schema changes are
 always proposals for review in staging.
 
+**Demo video:** https://youtu.be/MXjFz1IwJe4 (5.5 min, silent with captions; see [Demo video](#demo-video))
+
 | # | Agent | How it decides | Code |
 |---|-------|----------------|------|
 | 1 | Simple Reflex | Ordered condition → action rules on the latest window only | `dbdiag/agents/simple_reflex.py` |
@@ -261,6 +263,28 @@ feedback updates and resets the experience, the scoreboard covers every scenario
   signatures are coarse, so different incidents can share one.
 - The Goal-Based and Utility-Based agents share one evidence model, so they usually agree on the
   bottleneck; they differ in how they choose and order actions.
+
+## Demo video
+
+[Watch on YouTube](https://youtu.be/MXjFz1IwJe4) (5 min 29 s, silent, on-screen captions). It was
+recorded live from `streamlit run app.py` with `qwen3:8b` on Ollama. It walks through scenario A in
+full (telemetry, all six agents' decisions and mechanisms, the LLM's tool calls and evidence checks,
+the comparison, and learning feedback), then B, C and E. The 1–2 minute LLM runs are sped up 12×.
+
+| Time | Section |
+| --- | --- |
+| 0:00 | Introduction |
+| 0:18 | Scenario A: telemetry, query plans and logs |
+| 0:43 | Running all six agents |
+| 0:53 | Fairness check and decision cards |
+| 1:08 | How each agent decides |
+| 1:57 | LLM agent: tool calls and evidence checks |
+| 2:21 | Comparison: why the decisions differ |
+| 2:36 | Learning agent: feedback updates experience |
+| 3:02 | Scenario B: connection pool saturation |
+| 3:47 | Scenario C: agents disagree on peak load |
+| 4:42 | Scenario E: ambiguous case with missing data |
+| 5:19 | Wrap-up |
 
 ## Screenshots
 
